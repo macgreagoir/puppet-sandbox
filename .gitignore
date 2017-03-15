@@ -1,0 +1,8 @@
+*.swp
+TODO
+img/*
+!img/README
+config/*
+!config/README
+preseeds/*
+!preseeds/README

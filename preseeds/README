@@ -1,0 +1,3 @@
+Debian installation preseed files live here.
+
+Each must be named `preseed.cfg` and be stored in a subdirectory named for its machine. There is no need to manually create these files. If they don't exist, these files are created by `scripts/01_create_vm.sh <machine name>` from variables exported by `config/<machine name>.sh`.
