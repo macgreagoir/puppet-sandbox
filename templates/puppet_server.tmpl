@@ -14,3 +14,26 @@
 apt-get install -y puppetserver
 sed -i 's/^JAVA_ARGS.*/JAVA_ARGS="-Xms512m -Xmx512m"/' /etc/default/puppetserver
 service puppetserver start
+
+# Just for the sake of it:
+[[ -f /etc/puppetlabs/code/environments/production/manifests/site.pp ]] || {
+    cat > /etc/puppetlabs/code/environments/production/manifests/site.pp <<EOF
+node default {
+    include site::base
+}
+
+class site::base {
+    package { 'curl':
+        ensure => 'installed',
+    }
+
+    package { 'vim':
+        ensure => 'installed',
+    }   
+
+    package { 'wget':
+        ensure => 'installed',
+    }   
+}
+EOF
+}
