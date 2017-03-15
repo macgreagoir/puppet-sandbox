@@ -6,3 +6,5 @@ config/*
 !config/README
 preseeds/*
 !preseeds/README
+artifacts/*
+!artifacts/README

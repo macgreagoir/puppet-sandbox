@@ -1,0 +1,16 @@
+#!/bin/bash
+# Run this on the machine to be puppet master.
+
+[[ $1 == "run" ]] || {
+    echo "$0 should be run only on the puppet machine."
+    echo "Usage: $0 run"
+    exit 1
+}
+
+[[ -f /etc/apt/sources.list.d/puppetlabs-pc1.list ]] || {
+    echo Run puppet_base.sh first to configure APT repositories
+}
+
+apt-get install -y puppetserver
+sed -i 's/^JAVA_ARGS.*/JAVA_ARGS="-Xms512m -Xmx512m"/' /etc/default/puppetserver
+service puppetserver start

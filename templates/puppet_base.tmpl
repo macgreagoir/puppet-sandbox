@@ -1,0 +1,25 @@
+#!/bin/bash
+# Run this on the machines to be puppet master and agents.
+
+[[ $1 == "run" ]] || {
+    echo "$0 should be run only on the puppet master and agent machines."
+    echo "Usage: $0 run"
+    exit 1
+}
+
+[[ -f /etc/apt/sources.list.d/puppetlabs-pc1.list ]] || {
+    echo Adding Puppetlabs APT repository
+    PUPPET_RELEASE=puppetlabs-release-pc1-jessie.deb
+    wget https://apt.puppetlabs.com/${PUPPET_RELEASE}
+    dpkg -i $PUPPET_RELEASE
+    apt-get update && apt-get -y upgrade
+}
+
+echo Adding all configured hosts to /etc/hosts
+etc_hosts=(@@ETC_HOSTS@@)
+idx=${#etc_hosts[*]}
+while [[ "$idx" -gt 0 ]]; do
+    (( idx-- ))
+    l=${etc_hosts[idx]}
+    [[ $(grep ^"${l%%\ *}" /etc/hosts) ]] || echo "$l" >> /etc/hosts
+done
