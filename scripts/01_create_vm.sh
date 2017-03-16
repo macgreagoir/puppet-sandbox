@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set +e
+
 SANDBOX_DIR=$(cd $(dirname ${BASH_SOURCE[0]})/..; pwd)
 VM_NAME=${1?"Usage: $0 VM_NAME"}
 DISK_PATH=${SANDBOX_DIR}/img/${VM_NAME}.qcow2
@@ -15,9 +18,13 @@ CONFIG_PATH=${SANDBOX_DIR}/config/${VM_NAME}.sh
     mkdir -p $(dirname $PRESEED_PATH)
     source $CONFIG_PATH
     sed -e '/^$/d' -e '/^#/d' \
+        -e "s/@@DOMAIN@@/$DOMAIN/" \
         -e "s/@@NAME@@/$NAME/" \
+        -e "s/@@NETADDR@@/$NETADDR/" \
         -e "s/@@ADDR@@/$ADDR/" \
+        -e "s/@@NETMASK@@/$NETMASK/" \
         -e "s/@@PASSWD@@/$PASSWD/" \
+        -e "s|@@SSHKEYS_URL@@|$SSHKEYS_URL|" \
         ${SANDBOX_DIR}/templates/preseed.cfg > $PRESEED_PATH
 }
 

@@ -8,8 +8,10 @@ AGENT=${SANDBOX_DIR}/artifacts/puppet_agent.sh
 
 etc_hosts=''
 for f in ${SANDBOX_DIR}/config/*.sh; do
+    # NOTE magic name alert!
+    [[ $(basename $f) == "common.sh" ]] && continue
     source $f
-    etc_hosts+=" \"192.168.122.$ADDR $NAME.macgreagoir.org $NAME\" "
+    etc_hosts+=" \"${NETADDR}.${ADDR} ${NAME}.${DOMAIN} $NAME\" "
 done
 
 echo Writing $BASE
