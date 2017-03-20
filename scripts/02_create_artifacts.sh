@@ -1,5 +1,8 @@
 #!/bin/bash
-# Creates the artifacts required to complete the provisioning of puppet machines.
+# Creates the artifacts required to complete the configuration of the VMs as
+# puppet machines.
+
+set +e
 
 SANDBOX_DIR=$(cd $(dirname ${BASH_SOURCE[0]})/..; pwd)
 BASE=${SANDBOX_DIR}/artifacts/puppet_base.sh
