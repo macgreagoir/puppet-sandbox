@@ -25,7 +25,7 @@ sed -i "s/@@ETC_HOSTS@@/$etc_hosts/" $BASE
 
 echo Writing $MASTER
 cat ${SANDBOX_DIR}/templates/puppet_server.tmpl > $MASTER
-sed -i -e "s|@@PASSWD_CRYPT@@|$PASSWD_CRYPT|" \
+sed -i -e "s|@@PASSWD_CRYPT@@|${PASSWD_CRYPT//\$/\\\\\$}|" \
     -e "s|@@KEY_NAME@@|$KEY_NAME|" \
     -e "s|@@KEY_TYPE@@|$KEY_TYPE|" \
     -e "s|@@KEY@@|$KEY|" \
