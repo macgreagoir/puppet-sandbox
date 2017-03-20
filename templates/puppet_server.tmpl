@@ -15,7 +15,7 @@ apt-get install -y puppetserver
 sed -i 's/^JAVA_ARGS.*/JAVA_ARGS="-Xms512m -Xmx512m"/' /etc/default/puppetserver
 service puppetserver start
 
-# Just for the sake of it:
+# Just for the sake of it, a basic enforcement of the preseed.
 [[ -f /etc/puppetlabs/code/environments/production/manifests/site.pp ]] || {
     cat > /etc/puppetlabs/code/environments/production/manifests/site.pp <<EOF
 node default {
@@ -23,17 +23,46 @@ node default {
 }
 
 class site::base {
+    user { 'root':
+        ensure   => present,
+        password => '@@PASSWD_CRYPT@@',
+    }
+
+    user { 'debian':
+        ensure   => present,
+        require  => Package['sudo'],
+        password => '@@PASSWD_CRYPT@@',
+    }
+
     package { 'curl':
-        ensure => 'installed',
+        ensure => installed,
+    }
+
+    package { 'sudo':
+        ensure => installed,
     }
 
     package { 'vim':
-        ensure => 'installed',
-    }   
+        ensure => installed,
+    }
 
     package { 'wget':
-        ensure => 'installed',
-    }   
+        ensure => installed,
+    }
+
+    file { '/etc/sudoers.d/debian':
+        ensure  => file,
+        content => "debian ALL=(ALL) NOPASSWD: ALL\nDefaults:debian !requiretty\n",
+        mode    => '0440',
+        require => Package['sudo'],
+    }
+
+    ssh_authorized_key { 'debian_authorized_keys':
+        name => '@@KEY_NAME@@',
+        user => 'debian',
+        type => '@@KEY_TYPE@@',
+        key  => '@@KEY@@',
+    }
 }
 EOF
 }

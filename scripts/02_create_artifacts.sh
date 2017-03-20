@@ -14,13 +14,23 @@ for f in ${SANDBOX_DIR}/config/*.sh; do
     etc_hosts+=" \"${NETADDR}.${ADDR} ${NAME}.${DOMAIN} $NAME\" "
 done
 
+PASSWD_CRYPT=$(mkpasswd -m sha-512 -s <<<"$PASSWD")
+read KEY_TYPE KEY KEY_NAME <<<$(wget -q -O - ${SSHKEYS_URL//\\/})
+
+: ${etc_hosts:?} ${PASSWD_CRYPT:?} ${KEY_TYPE:?} ${KEY:?} ${KEY_NAME:?}
+
 echo Writing $BASE
 cat ${SANDBOX_DIR}/templates/puppet_base.tmpl > $BASE
 sed -i "s/@@ETC_HOSTS@@/$etc_hosts/" $BASE
 
-# This is really static, but is included here for consistency.
 echo Writing $MASTER
 cat ${SANDBOX_DIR}/templates/puppet_server.tmpl > $MASTER
+sed -i -e "s|@@PASSWD_CRYPT@@|$PASSWD_CRYPT|" \
+    -e "s|@@KEY_NAME@@|$KEY_NAME|" \
+    -e "s|@@KEY_TYPE@@|$KEY_TYPE|" \
+    -e "s|@@KEY@@|$KEY|" \
+    $MASTER
 
+# This is really static, but is included here for consistency.
 echo Writing $AGENT
 cat ${SANDBOX_DIR}/templates/puppet_agent.tmpl > $AGENT
