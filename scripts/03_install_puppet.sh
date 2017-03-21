@@ -16,17 +16,38 @@ SSHOPTS='-o StrictHostKeyChecking=no'
     exit 1
 }
 
+# Make sure all the machines are started.
+function start_machines() {
+    # Shoot me for the sleep.
+    for machine in $(ls ${SANDBOX_DIR}/config/!(README|common.sh)); do
+        virsh start $(basename $machine .sh) && sleep 10 || true
+    done
+}
+
 source $MASTER_CONFIG
 echo Installing puppet master
 scp $SSHOPTS artifacts/puppet_{base,master}.sh debian@${NETADDR}.${ADDR}:
-ssh $SSHOPTS debian@${NETADDR}.${ADDR} 'sudo bash puppet_base.sh run; sudo bash puppet_master.sh run'
-
+ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+    sudo bash puppet_base.sh run
+    sudo bash puppet_master.sh run
+'
+# TODO Agent machines stop after the puppet install. Why?
+start_machines
 for agent_config in $(ls ${SANDBOX_DIR}/config/!(README|common.sh|${MASTER_HOSTNAME}.sh)); do
     source $agent_config
     echo Installing puppet agent $NAME
     scp $SSHOPTS artifacts/puppet_{base,agent}.sh debian@${NETADDR}.${ADDR}:
-    ssh $SSHOPTS debian@${NETADDR}.${ADDR} 'sudo bash puppet_base.sh run; sudo bash puppet_agent.sh run'
+    ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+        sudo bash puppet_base.sh run
+        sudo bash puppet_agent.sh run
+    '
 done
 
+# TODO Not another sleep! Find a check for certs, maybe loop on `cert list`.
+# One `cert list` is thrown in, at least for now.
 source $MASTER_CONFIG
-ssh $SSHOPTS debian@${NETADDR}.${ADDR} 'sudo /opt/puppetlabs/bin/puppet cert sign --all'
+sleep 5
+ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+    sudo /opt/puppetlabs/bin/puppet cert list
+    sudo /opt/puppetlabs/bin/puppet cert sign --all
+'
