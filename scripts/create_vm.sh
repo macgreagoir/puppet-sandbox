@@ -20,9 +20,10 @@ CONFIG_PATH=${SANDBOX_DIR}/config/${VM_NAME}.sh
     sed -e '/^$/d' -e '/^#/d' \
         -e "s/@@DOMAIN@@/$DOMAIN/" \
         -e "s/@@NAME@@/$NAME/" \
-        -e "s/@@NETADDR@@/$NETADDR/" \
-        -e "s/@@ADDR@@/$ADDR/" \
+        -e "s/@@IPADDR@@/$IPADDR/" \
         -e "s/@@NETMASK@@/$NETMASK/" \
+        -e "s/@@GW@@/$GW/" \
+        -e "s/@@NS@@/$NS/" \
         -e "s/@@PASSWD@@/$PASSWD/" \
         -e "s|@@SSHKEYS_URL@@|$SSHKEYS_URL|" \
         ${SANDBOX_DIR}/templates/preseed.cfg > $PRESEED_PATH

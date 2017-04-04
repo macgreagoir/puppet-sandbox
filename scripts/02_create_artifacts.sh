@@ -14,7 +14,7 @@ for f in ${SANDBOX_DIR}/config/*.sh; do
     # NOTE magic name alert!
     [[ $(basename $f) == "common.sh" ]] && continue
     source $f
-    etc_hosts+=" \"${NETADDR}.${ADDR} ${NAME}.${DOMAIN} $NAME\" "
+    etc_hosts+=" \"${IPADDR} ${NAME}.${DOMAIN} $NAME\" "
 done
 
 PASSWD_CRYPT=$(mkpasswd -m sha-512 -s <<<"$PASSWD")

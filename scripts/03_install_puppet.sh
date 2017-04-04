@@ -26,8 +26,8 @@ function start_machines() {
 
 source $MASTER_CONFIG
 echo Installing puppet master
-scp $SSHOPTS artifacts/puppet_{base,master}.sh debian@${NETADDR}.${ADDR}:
-ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+scp $SSHOPTS artifacts/puppet_{base,master}.sh debian@${IPADDR}:
+ssh $SSHOPTS debian@${IPADDR} '
     sudo bash puppet_base.sh run
     sudo bash puppet_master.sh run
 '
@@ -36,8 +36,8 @@ start_machines
 for agent_config in $(ls ${SANDBOX_DIR}/config/!(README|common.sh|${MASTER_HOSTNAME}.sh)); do
     source $agent_config
     echo Installing puppet agent $NAME
-    scp $SSHOPTS artifacts/puppet_{base,agent}.sh debian@${NETADDR}.${ADDR}:
-    ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+    scp $SSHOPTS artifacts/puppet_{base,agent}.sh debian@${IPADDR}:
+    ssh $SSHOPTS debian@${IPADDR} '
         sudo bash puppet_base.sh run
         sudo bash puppet_agent.sh run
     '
@@ -47,7 +47,7 @@ done
 # One `cert list` is thrown in, at least for now.
 source $MASTER_CONFIG
 sleep 5
-ssh $SSHOPTS debian@${NETADDR}.${ADDR} '
+ssh $SSHOPTS debian@${IPADDR} '
     sudo /opt/puppetlabs/bin/puppet cert list
     sudo /opt/puppetlabs/bin/puppet cert sign --all
 '
